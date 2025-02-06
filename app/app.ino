@@ -21,8 +21,13 @@ int total_effects = 2;
 bool is_turn_off = false;  // si esta apagado todo
 
 // Variables para intercalateLed 
-int intercalate_i = 0; // contador para funcion intercalateLed
+int intercalate_i = 0;  // contador para funcion intercalateLed
 int intercalate_step = 1;
+
+// Variables para fade
+int fade_vel = 5;  // velocidad para fadeLeds en ms
+int fade_step = 15;
+int fade_count = 0;
 
 
 void setup() {
@@ -32,11 +37,12 @@ void setup() {
     led = leds[i];
     pinMode(led, OUTPUT);
   }
-  // salida de boton input
+  // entrada de boton input
   pinMode(pinButton, INPUT);
-  // salida de fuente para boton
+  // salida de fuente para boton en pulldown
   pinMode(fuente, OUTPUT); 
   digitalWrite(fuente, HIGH);
+
   // salida Serial para debug
   Serial.begin(9600);
 }
@@ -104,17 +110,15 @@ void fadeLeds(){
     regulando la intensidad progresivamente
   */
 
-  // Aumentar intensidad
-  for (int i = 0; i <= 255; i += 15){
-    setLedsIntensity(i);
-    delay(5);
+  // Actualizar intensidad
+  setLedsIntensity(fade_count);
+  fade_count = fade_count + fade_step;
+
+  if (fade_count == 255 || fade_count == 0){
+    fade_step = -fade_step;
   }
 
-  // disminuir intensidad
-  for (int i = 255; i >= 0; i -= 15){
-    setLedsIntensity(i);
-    delay(5);
-  }
+  delay(fade_vel);
 }
 
 
@@ -142,12 +146,7 @@ void turnOff(){
   Funcion para apagar todos los LEDs si no están apagados
 */
   if (!is_turn_off){
-    byte led;
-    
-    for (int i = 0; i <= 5; i++){
-      led = leds[i];
-      digitalWrite(led, LOW);
-    }
+    setLedsIntensity(0);
     
     is_turn_off = true;
   }
