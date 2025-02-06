@@ -17,7 +17,7 @@ int last_button_press = 0;
 
 // constantes globales para distintas funciones/efectos de luces
 int effects_counter = 0;
-int total_effects = 1;
+int total_effects = 2;
 bool is_turn_off = false;  // si esta apagado todo
 
 // Variables para intercalateLed 
@@ -77,9 +77,44 @@ void loop() {
     case 1:
       intercalateLed();
       break;
+    case 2: 
+      fadeLeds();
+      break;
   }
   
   //delay(50);
+}
+
+
+void setLedsIntensity(int intensity){
+  /*
+    Setear todos los LED dada una intensidad
+  */
+  byte led;
+  for (int i = 0; i <= 5; i++){
+    led = leds[i];
+    analogWrite(led, intensity);
+  }
+}
+
+
+void fadeLeds(){
+  /*
+    Enciende y apaga los LEDs usando PWM,
+    regulando la intensidad progresivamente
+  */
+
+  // Aumentar intensidad
+  for (int i = 0; i <= 255; i += 15){
+    setLedsIntensity(i);
+    delay(5);
+  }
+
+  // disminuir intensidad
+  for (int i = 255; i >= 0; i -= 15){
+    setLedsIntensity(i);
+    delay(5);
+  }
 }
 
 
