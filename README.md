@@ -1,8 +1,8 @@
 # LEDs-arduino
 
-![armado_fisico_bb](https://github.com/user-attachments/assets/a43a2a3c-79f6-412d-99cf-6b987b9c5feb)
 
 Este trabajo sencillo controla los encendidos de 6 LEDs haciendolos realizar patrones. 
+![armado_fisico_bb](https://github.com/user-attachments/assets/07870f9f-0521-4331-bb5a-3c862f293bd5)
 
 
 ## Objetivos
