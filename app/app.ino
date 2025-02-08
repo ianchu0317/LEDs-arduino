@@ -10,6 +10,6 @@ void setup() {
 
 void loop() {
   checkButtonPress();
-  void switchEffect();
+  switchEffect();
   //delay(50);
 }
