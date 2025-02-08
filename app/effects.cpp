@@ -23,7 +23,7 @@ int last_button_press = 0;
 
 //  variables para manejar efectos
 int effects_counter = 0;
-int total_effects = 2;
+int total_effects = 3;
 bool is_turn_off = false;  // si esta apagado todo
 
 //  variables para intercalateLED
@@ -35,6 +35,11 @@ int fade_vel = 5;         // velocidad de fade en ms
 int fade_step = 15;       // cambio de intensidad
 int fade_count = 0;
 
+// variables para intercalateIn y intercalateOut
+int activation_counter = 0;  // contador para activeLeds
+bool reverse = false;
+int debounce_time = 100;     // ms
+int last_activation_time = 0;
 
 
 /* *** CONFIGURACIONES *** */
@@ -55,6 +60,7 @@ void setupButton(){
   // salida de fuente para boton en pulldown
   pinMode(fuente, OUTPUT); 
   digitalWrite(fuente, HIGH);
+  Serial.begin(9600);
 }
 
 
@@ -89,6 +95,7 @@ void checkButtonPress(){
 
 // cambiar efecto actual 
 void switchEffect(){
+  Serial.println(effects_counter);
   switch (effects_counter){
     case 0:
       turnOff();
@@ -98,6 +105,9 @@ void switchEffect(){
       break;
     case 2: 
       fadeLeds();
+      break;
+    case 3:
+      intercalateInOut();
       break;
   }
 }
@@ -153,3 +163,71 @@ void intercalateLed(){
   }
 }
 
+
+/*
+  Alterna los encendidos de los LEDs
+  A diferencia del anterior también los apaga
+  Los LEDs prendidos se mantienen prendidos por un momento
+*/
+void intercalateInOut(){
+  if (!reverse){
+    lightUpTo();
+  } else {
+    lightDownTo();
+  }
+}
+
+
+// Enciende y apaga de led 1 a 6
+void lightUpTo(){
+  static byte activation_state = HIGH;
+
+  if (millis() - last_activation_time > debounce_time){
+    // cambiar estado de luces progresivamente
+    int currentLed = leds[activation_counter];
+    digitalWrite(currentLed, activation_state);
+
+    // seguir index de contador 
+    if (activation_counter == 5){
+      if (activation_state == LOW){
+        // hard reset
+        reverse = true;  
+        activation_state = HIGH;
+      } else {
+        // resetear por primera vez
+        activation_counter = 0;
+        activation_state = LOW;
+      }
+    } else {
+      activation_counter = activation_counter + 1;
+    }
+    last_activation_time = millis();
+  }
+}
+
+
+// reversa de lightUpTo
+void lightDownTo(){
+  static byte activation_state = HIGH;
+
+  if (millis() - last_activation_time > debounce_time){
+    // cambiar estado de luces progresivamente
+    int currentLed = leds[activation_counter];
+    digitalWrite(currentLed, activation_state);
+    delay(100);
+
+    // seguir index de contador 
+    if (activation_counter == 0){
+      if (activation_state == LOW){
+        reverse = false;  // ya se prendieron y apagaron
+        activation_state = HIGH;
+      } else {
+        activation_counter = 5; // ultimo elemento
+        activation_state = LOW;
+      }
+    } else {
+      activation_counter = activation_counter - 1;
+    }
+    last_activation_time = millis();
+  }
+}
