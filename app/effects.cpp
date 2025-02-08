@@ -36,10 +36,12 @@ int fade_step = 15;       // cambio de intensidad
 int fade_count = 0;
 
 // variables para intercalateIn y intercalateOut
-int activation_counter = 0;  // contador para activeLeds
-bool reverse = false;
+int activation_counter = 0;  // contador para leds activados
 int debounce_time = 100;     // ms
-int last_activation_time = 0;
+bool reverse = false;
+unsigned long last_activation_time = 0;
+byte activation_state = HIGH;
+
 
 
 /* *** CONFIGURACIONES *** */
@@ -60,7 +62,6 @@ void setupButton(){
   // salida de fuente para boton en pulldown
   pinMode(fuente, OUTPUT); 
   digitalWrite(fuente, HIGH);
-  Serial.begin(9600);
 }
 
 
@@ -95,7 +96,6 @@ void checkButtonPress(){
 
 // cambiar efecto actual 
 void switchEffect(){
-  Serial.println(effects_counter);
   switch (effects_counter){
     case 0:
       turnOff();
@@ -171,18 +171,18 @@ void intercalateLed(){
 */
 void intercalateInOut(){
   if (!reverse){
-    lightUpTo();
+    turnOnLedsSequentially();
   } else {
-    lightDownTo();
+    turnOffLedsSequentially() ;
   }
 }
 
 
 // Enciende y apaga de led 1 a 6
-void lightUpTo(){
-  static byte activation_state = HIGH;
-
+void turnOnLedsSequentially() {
   if (millis() - last_activation_time > debounce_time){
+    last_activation_time = millis();
+
     // cambiar estado de luces progresivamente
     int currentLed = leds[activation_counter];
     digitalWrite(currentLed, activation_state);
@@ -201,33 +201,30 @@ void lightUpTo(){
     } else {
       activation_counter = activation_counter + 1;
     }
-    last_activation_time = millis();
   }
 }
 
 
-// reversa de lightUpTo
-void lightDownTo(){
-  static byte activation_state = HIGH;
-
+// reversa de turnOnLedsSequentially
+void turnOffLedsSequentially() {
   if (millis() - last_activation_time > debounce_time){
+    last_activation_time = millis();    // actualizar tiempo
+
     // cambiar estado de luces progresivamente
     int currentLed = leds[activation_counter];
     digitalWrite(currentLed, activation_state);
-    delay(100);
-
+    
     // seguir index de contador 
     if (activation_counter == 0){
       if (activation_state == LOW){
-        reverse = false;  // ya se prendieron y apagaron
+        reverse = false;  
         activation_state = HIGH;
       } else {
-        activation_counter = 5; // ultimo elemento
+        activation_counter = 5; 
         activation_state = LOW;
       }
     } else {
       activation_counter = activation_counter - 1;
     }
-    last_activation_time = millis();
   }
 }

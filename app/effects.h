@@ -12,7 +12,7 @@ void setLedsIntensity(int intensity);
 void intercalateLed();
 void fadeLeds();
 void intercalateInOut();
-void lightUpTo();
-void lightDownTo();
+void turnOnLedsSequentially();
+void turnOffLedsSequentially();
 
 #endif
