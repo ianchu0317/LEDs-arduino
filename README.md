@@ -6,6 +6,8 @@
 
 Este trabajo sencillo controla los encendidos de 6 LEDs haciendolos realizar patrones. 
 
+Video de demostración: https://youtube.com/shorts/giR46Bbi2GU?si=IsupoN2cUPmeDJDe
+
 ## Objetivos
 Los objetivos fueron:
 - Practicar la planificación de un proyecto en general y llevarla a cabo.
